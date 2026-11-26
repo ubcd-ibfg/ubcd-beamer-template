@@ -1,0 +1,25 @@
+# LaTeX build artefacts
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.vrb
+*.xdv
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.bbl
+*.blg
+
+# Keep example PDF out of git (CI publishes it); remove this line to commit it
+example/main.pdf
+poster/main.pdf
+starter/main.pdf
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/

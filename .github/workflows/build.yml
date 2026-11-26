@@ -1,0 +1,38 @@
+name: Build example deck
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile example with XeLaTeX
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          working_directory: example
+          latexmk_use_xelatex: true
+          pre_compile: tlmgr install archivo jetbrainsmono-otf moloch qrcode || true
+          # make the theme in the repo root visible to the build
+          args: -xelatex -interaction=nonstopmode -file-line-error
+        env:
+          TEXINPUTS: ".:../:"
+      - name: Compile poster with XeLaTeX
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          working_directory: poster
+          latexmk_use_xelatex: true
+          pre_compile: tlmgr install archivo jetbrainsmono-otf qrcode || true
+          args: -xelatex -interaction=nonstopmode -file-line-error
+        env:
+          TEXINPUTS: ".:../:"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: example-pdfs
+          path: |
+            example/main.pdf
+            poster/main.pdf

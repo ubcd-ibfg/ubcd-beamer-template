@@ -1,0 +1,2 @@
+$pdf_mode = 5;                 # XeLaTeX
+ensure_path('TEXINPUTS', '../');   # find the theme and logos in the repo root

@@ -1,0 +1,445 @@
+% =====================================================================
+%  UBCDSlidesTemplate — tema Beamer basado en moloch con el estilo del
+%  UBCD Design System (Unidad de Bioinformática y Ciencia de Datos, IBFG)
+%
+%  Uso:
+%    \documentclass[aspectratio=169,t]{beamer}
+%    \usetheme{UBCDSlidesTemplate}
+%  Compila con XeLaTeX o LuaLaTeX (Archivo + JetBrains Mono vía fontspec).
+%  Con pdfLaTeX funciona con fuentes de reserva (paquete Archivo).
+%
+%  Escala: el diseño original es un lienzo de 1920×1080 px; aquí
+%  1 px = 0,237 pt (16:9 = 455 × 256 pt), así que las proporciones
+%  coinciden con la versión HTML del deck.
+% =====================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemeUBCDSlidesTemplate}[2026/11/23 v1.0 UBCD Slides Template (based on moloch)]
+
+\RequirePackage{iftex}
+\RequirePackage{etoolbox}
+\RequirePackage{tikz}
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins}
+\RequirePackage{array}
+\RequirePackage{colortbl}
+
+% ---------------------------------------------------------------------
+%  Base: moloch, sin página de sección ni barra de progreso propias
+% ---------------------------------------------------------------------
+\usetheme[sectionpage=none, progressbar=none]{moloch}
+
+% ---------------------------------------------------------------------
+%  Colores (tokens del UBCD Design System)
+% ---------------------------------------------------------------------
+\definecolor{ubcdVermilion}{HTML}{E5302E}  % rojo brillante: una acción/realce por vista
+\definecolor{ubcdCrimson}{HTML}{9A1E12}    % acento principal: eyebrows, enlaces
+\definecolor{ubcdMaroon}{HTML}{7E0E0A}     % fondo oscuro: separadores y cierre
+\definecolor{ubcdMaroonInk}{HTML}{5C0906}
+\definecolor{ubcdLinen}{HTML}{F4F1EC}      % lienzo
+\definecolor{ubcdPaper}{HTML}{F7F4F0}      % lienzo alternativo / portada
+\definecolor{ubcdBorderOne}{HTML}{E0DBD4}  % filetes
+\definecolor{ubcdBorderTwo}{HTML}{D4CFC8}
+\definecolor{ubcdInk}{HTML}{1A1715}        % texto y títulos
+\definecolor{ubcdStoneOne}{HTML}{7A6F6A}   % texto secundario
+\definecolor{ubcdStoneTwo}{HTML}{9A9490}
+\definecolor{ubcdStoneThree}{HTML}{B0A9A4}
+\definecolor{ubcdSuccess}{HTML}{2E7D5B}
+\definecolor{ubcdWarning}{HTML}{C77A16}
+\definecolor{ubcdDanger}{HTML}{C0281C}
+
+\setbeamercolor{normal text}{fg=ubcdInk, bg=ubcdLinen}
+\setbeamercolor{background canvas}{bg=ubcdLinen}
+\setbeamercolor{structure}{fg=ubcdCrimson}
+\setbeamercolor{alerted text}{fg=ubcdCrimson}
+\setbeamercolor{example text}{fg=ubcdSuccess}
+\setbeamercolor{titlelike}{fg=ubcdInk}
+\setbeamercolor{frametitle}{fg=ubcdInk, bg=}
+\setbeamercolor{framesubtitle}{fg=ubcdCrimson}
+\setbeamercolor{title}{fg=ubcdInk}
+\setbeamercolor{subtitle}{fg=ubcdCrimson}
+\setbeamercolor{itemize item}{fg=ubcdVermilion}
+\setbeamercolor{itemize subitem}{fg=ubcdVermilion}
+\setbeamercolor{enumerate item}{fg=ubcdVermilion}
+\setbeamercolor{block title}{fg=ubcdCrimson, bg=}
+\setbeamercolor{block body}{fg=ubcdInk, bg=}
+\setbeamercolor{standout}{fg=white, bg=ubcdMaroon}
+\setbeamercolor{footline}{fg=ubcdStoneOne}
+\setbeamercolor{page number in head/foot}{fg=ubcdCrimson}
+
+% ---------------------------------------------------------------------
+%  Tipografía: Archivo (estructura) + JetBrains Mono (datos, eyebrows)
+% ---------------------------------------------------------------------
+\newif\ifubcd@otf
+\ifXeTeX\ubcd@otftrue\fi
+\ifLuaTeX\ubcd@otftrue\fi
+
+\ifubcd@otf
+  \RequirePackage{fontspec}
+  \setsansfont{Archiv0}[
+    Extension=.otf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
+  \setmainfont{Archiv0}[
+    Extension=.otf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
+  \setmonofont{JetBrainsMono}[
+    Extension=.otf,
+    UprightFont=*-Regular, BoldFont=*-Bold,
+    ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
+  % Espaciado entre letras (en % del cuerpo): 18 = 0,18 em
+  \newcommand{\ubcd@spaced}[2][18]{{\addfontfeature{LetterSpace=#1}#2}}
+\else
+  \RequirePackage[T1]{fontenc}
+  \RequirePackage[bold]{Archivo}
+  \RequirePackage[scaled=0.9]{inconsolata}
+  % Símbolos que pdfLaTeX no trae definidos
+  \DeclareUnicodeCharacter{2248}{\ensuremath{\approx}}
+  \DeclareUnicodeCharacter{2265}{\ensuremath{\geq}}
+  \DeclareUnicodeCharacter{2264}{\ensuremath{\leq}}
+  \DeclareUnicodeCharacter{2192}{\ensuremath{\rightarrow}}
+  \DeclareUnicodeCharacter{00D7}{\ensuremath{\times}}
+  \newcommand{\ubcd@spaced}[2][18]{#2}
+\fi
+
+% Tamaño explícito (pt, interlineado)
+\newcommand{\ubcdfs}[2]{\fontsize{#1}{#2}\selectfont}
+% Escala tipográfica (px del diseño → pt)
+\newcommand{\ubcdsizedisplay}{\ubcdfs{28.4}{28.4}}  % 120 px  título de portada
+\newcommand{\ubcdsizedivider}{\ubcdfs{24.6}{25.2}}  % 104 px  separadores y cierre
+\newcommand{\ubcdsizestat}{\ubcdfs{22.8}{22.8}}     %  96 px  cifras
+\newcommand{\ubcdsizetitle}{\ubcdfs{15.2}{16.4}}    %  64 px  títulos de diapositiva
+\newcommand{\ubcdsizesubtitle}{\ubcdfs{10.4}{12.5}} %  44 px  subtítulo de portada
+\newcommand{\ubcdsizehead}{\ubcdfs{8.1}{9.7}}       %  34 px  título de fila
+\newcommand{\ubcdsizelead}{\ubcdfs{7.6}{10.6}}      %  32 px  entradilla y título de tarjeta
+\newcommand{\ubcdsizebody}{\ubcdfs{6.2}{8.7}}       %  26 px  cuerpo
+\newcommand{\ubcdsizelabel}{\ubcdfs{5.7}{7.7}}      %  24 px  etiquetas mono, pie
+
+\setbeamerfont{frametitle}{size=\ubcdsizetitle, series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\ubcdsizelabel, series=\bfseries, family=\ttfamily}
+\setbeamerfont{title}{size=\ubcdsizedisplay, series=\bfseries}
+\setbeamerfont{subtitle}{size=\ubcdsizesubtitle, series=\bfseries}
+\setbeamerfont{itemize/enumerate body}{size=\ubcdsizebody}
+\setbeamerfont{itemize/enumerate subbody}{size=\ubcdsizebody}
+
+% ---------------------------------------------------------------------
+%  Medidas
+% ---------------------------------------------------------------------
+\newlength{\ubcdmargin}\setlength{\ubcdmargin}{30.3pt}   % 128 px
+\newlength{\ubcdgap}\setlength{\ubcdgap}{5.7pt}          %  24 px
+\newlength{\ubcdrowgap}\setlength{\ubcdrowgap}{4.7pt}    %  20 px
+\setbeamersize{text margin left=\ubcdmargin, text margin right=\ubcdmargin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize item}{\raisebox{0.15ex}{\scalebox{0.8}{\textbullet}}}
+\setbeamertemplate{itemize subitem}{\raisebox{0.15ex}{\scalebox{0.6}{\textbullet}}}
+
+% ---------------------------------------------------------------------
+%  Datos configurables
+% ---------------------------------------------------------------------
+\newcommand{\ubcd@logo}{ubcd-mark-transparent-512.png}
+\newcommand{\ubcd@logodark}{ubcd-mark-maroon-512.png}
+\newcommand{\ubcd@kicker}{UBCD · IBFG · CSIC–USAL}
+\newcommand{\ubcd@footertext}{\insertshorttitle}
+\newcommand{\ubcd@titlemeta}{}
+\newcommand{\ubcd@toplogos}{}
+\newcommand{\ubcd@sectionlabel}{SECCIÓN}
+\newcommand{\ubcd@secdesc}{}
+
+\newcommand{\ubcdlogo}[1]{\renewcommand{\ubcd@logo}{#1}}           % logo para fondos claros
+\newcommand{\ubcdlogodark}[1]{\renewcommand{\ubcd@logodark}{#1}}   % logo para fondo granate
+\newcommand{\ubcdkicker}[1]{\renewcommand{\ubcd@kicker}{#1}}       % etiqueta junto al logo
+\newcommand{\ubcdfootertext}[1]{\renewcommand{\ubcd@footertext}{#1}}
+\newcommand{\ubcdsectionlabel}[1]{\renewcommand{\ubcd@sectionlabel}{#1}}
+\newcommand{\ubcdtitlemeta}[1]{\renewcommand{\ubcd@titlemeta}{#1}} % filas \ubcdmetarow
+% Fila de logos en la parte superior de la portada (la fecha pasa arriba a la derecha)
+\newcommand{\ubcdtoplogos}[1]{\renewcommand{\ubcd@toplogos}{#1}}
+% \ubcdsection{Título}{Descripción del separador}
+\newcommand{\ubcdsection}[2]{\gdef\ubcd@secdesc{#2}\section{#1}}
+
+% Fondo alternativo (papel): {\ubcdpaper \begin{frame}...\end{frame}}
+\newcommand{\ubcdpaper}{\setbeamercolor{background canvas}{bg=ubcdPaper}}
+
+\newcommand{\ubcd@twodigits}[1]{\ifnum#1<10 0\fi\number#1}
+
+% Texto en bandera (sin justificar ni partir palabras), con el espaciado de la fuente
+\newcommand{\ubcdragged}{%
+  \leftskip=0pt\rightskip=0pt plus 1fil\parfillskip=0pt plus 1fil
+  \spaceskip=0pt\xspaceskip=0pt\parindent=0pt\hyphenpenalty=10000\exhyphenpenalty=10000\relax}
+
+% ---------------------------------------------------------------------
+%  Título de diapositiva: eyebrow (subtítulo) en mono + título
+%    \begin{frame}{Título}{EYEBROW}
+% ---------------------------------------------------------------------
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \vspace*{20pt}%
+  \hbox{\parbox{\textwidth}{\ubcdragged
+    \ifx\insertframesubtitle\@empty\else
+      {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}%
+       \ubcd@spaced{\insertframesubtitle}\par}%
+      \vspace{3.8pt}%
+    \fi
+    {\usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}%
+     \ubcd@spaced[-2.5]{\insertframetitle}\par}%
+  }}%
+  \vspace{11.4pt}%
+}
+
+% ---------------------------------------------------------------------
+%  Pie: texto a la izquierda, número de diapositiva a la derecha
+% ---------------------------------------------------------------------
+\setbeamertemplate{footline}{%
+  \vskip 8pt%
+  \hbox to \paperwidth{%
+    \hskip\ubcdmargin
+    {\ttfamily\ubcdsizelabel\color{ubcdStoneOne}\ubcd@spaced[6]{\ubcd@footertext}}%
+    \hfill
+    {\ttfamily\bfseries\ubcdsizelabel\color{ubcdCrimson}\ubcd@twodigits{\value{framenumber}}}%
+    \hskip\ubcdmargin}%
+  \vskip 15pt%
+}
+
+% ---------------------------------------------------------------------
+%  Portada
+% ---------------------------------------------------------------------
+\newcommand{\ubcdmetarow}[2]{%
+  \noindent
+  \parbox[t]{52pt}{\ttfamily\bfseries\ubcdsizelabel\color{ubcdStoneOne}\ubcd@spaced[12]{#1}}%
+  \hspace{7.6pt}%
+  \parbox[t]{262pt}{\ubcdragged\ubcdfs{7.1}{9.2}\color{ubcdInk}#2}\par
+  \vspace{4.2pt}}
+
+\newcommand{\ubcd@lockup}{%
+  \parbox[c]{21pt}{\includegraphics[width=21pt]{\ubcd@logo}}%
+  \hspace{5.7pt}%
+  \parbox[c]{280pt}{\ttfamily\bfseries\ubcdsizelabel\color{ubcdCrimson}\ubcd@spaced{\ubcd@kicker}}}
+
+\defbeamertemplate*{title page}{ubcd}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[ubcdPaper] (current page.south west) rectangle (current page.north east);
+    \node[opacity=0.12, anchor=north west, inner sep=0pt]
+      at ([xshift=270pt, yshift=-38pt]current page.north west)
+      {\includegraphics[width=170pt]{\ubcd@logo}};
+    \node[anchor=west, inner sep=0pt, text width=335pt, align=left]
+      at ([xshift=\ubcdmargin, yshift=4pt]current page.west) {%
+        \ubcd@lockup\par\vspace{11.4pt}%
+        {\usebeamerfont{title}\color{ubcdInk}\ubcd@spaced[-3]{\inserttitle}\par}%
+        \vspace{6.6pt}%
+        {\usebeamerfont{subtitle}\color{ubcdCrimson}\parbox{272pt}{\ubcdragged\insertsubtitle}\par}%
+        \vspace{15pt}%
+        \ubcd@titlemeta
+      };
+    \node[anchor=south west, inner sep=0pt]
+      at ([xshift=\ubcdmargin, yshift=15pt]current page.south west) {\inserttitlegraphic};
+    \ifx\ubcd@toplogos\@empty
+      \node[anchor=south east, inner sep=0pt]
+        at ([xshift=-\ubcdmargin, yshift=15pt]current page.south east)
+        {\ttfamily\ubcdsizelabel\color{ubcdStoneOne}\ubcd@spaced[6]{\insertdate}};
+    \else
+      \node[anchor=north west, inner sep=0pt]
+        at ([xshift=\ubcdmargin, yshift=-16pt]current page.north west)
+        {\ubcd@toplogos};
+      \node[anchor=north east, inner sep=0pt]
+        at ([xshift=-\ubcdmargin, yshift=-16pt]current page.north east)
+        {\ttfamily\ubcdsizelabel\color{ubcdStoneOne}\ubcd@spaced[6]{\insertdate}};
+    \fi
+  \end{tikzpicture}%
+}
+
+% ---------------------------------------------------------------------
+%  Separador de sección: granate con campo binario
+% ---------------------------------------------------------------------
+\newcommand{\ubcd@binaryfield}{%
+  \pgfmathsetseed{\numexpr\value{section}*7+3\relax}%
+  \foreach \ubcd@i in {1,...,1300}{\pgfmathrandominteger{\ubcd@d}{0}{1}\ubcd@d\ }}
+
+\defbeamertemplate*{section page}{ubcd}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[ubcdMaroon] (current page.south west) rectangle (current page.north east);
+    \begin{scope}
+      \clip (current page.south west) rectangle (current page.north east);
+      \node[anchor=north west, inner sep=9.5pt, text width=\dimexpr\paperwidth-19pt\relax,
+            align=left, text=white, text opacity=0.07]
+        at (current page.north west)
+        {\ttfamily\ubcdfs{6.2}{12.4}\ubcd@spaced[50]{\ubcd@binaryfield}};
+    \end{scope}
+    \node[anchor=west, inner sep=0pt, text width=360pt, align=left]
+      at ([xshift=\ubcdmargin]current page.west) {%
+        {\ttfamily\bfseries\ubcdfs{6.6}{8}\color{white!78!ubcdMaroon}%
+         \ubcd@spaced{\ubcd@sectionlabel~·~\ubcd@twodigits{\value{section}}}\par}%
+        \vspace{6.6pt}%
+        {\bfseries\ubcdsizedivider\color{white}\ubcd@spaced[-3]{\insertsectionhead}\par}%
+        \ifx\ubcd@secdesc\@empty\else
+          \vspace{8.5pt}%
+          {\ubcdsizelead\color{white!85!ubcdMaroon}\parbox{285pt}{\ubcdragged\ubcd@secdesc}\par}%
+        \fi
+      };
+  \end{tikzpicture}%
+}
+
+\AtBeginSection{%
+  \ifbeamer@inframe
+    \usebeamertemplate*{section page}%
+  \else
+    \frame[plain]{\usebeamertemplate*{section page}}%
+  \fi
+  \gdef\ubcd@secdesc{}%
+}
+
+% ---------------------------------------------------------------------
+%  Diapositiva de cierre
+%    \ubcdclosing{Gracias}{¿Preguntas?}{correo · web}
+% ---------------------------------------------------------------------
+% Logo del cierre: sobre una placa color papel (el PNG granate deja un recuadro
+% de otro tono). Redef\u00ednelo con \renewcommand si prefieres \ubcd@logodark.
+\newcommand{\ubcd@closinglogo}{%
+  \tcbox[colback=ubcdPaper, colframe=ubcdPaper, arc=4pt, boxrule=0pt, boxsep=0pt,
+    left=5pt, right=5pt, top=5pt, bottom=5pt, nobeforeafter]
+    {\includegraphics[width=34pt]{\ubcd@logo}}}
+\newcommand{\ubcdclosing}[3]{%
+  \frame[plain]{%
+    \begin{tikzpicture}[remember picture, overlay]
+      \fill[ubcdMaroon] (current page.south west) rectangle (current page.north east);
+      \node[anchor=center, inner sep=0pt, text width=400pt, align=center]
+        at (current page.center) {%
+          \ubcd@closinglogo\par\vspace{10.4pt}%
+          {\bfseries\ubcdsizedivider\color{white}\ubcd@spaced[-3]{#1}\par}\vspace{5.7pt}%
+          {\bfseries\ubcdsizesubtitle\color{white!90!ubcdMaroon}#2\par}\vspace{11.4pt}%
+          {\ttfamily\ubcdfs{6.6}{8}\color{white!85!ubcdMaroon}\ubcd@spaced[6]{#3}\par}%
+        };
+    \end{tikzpicture}%
+  }%
+}
+
+% ---------------------------------------------------------------------
+%  Componentes de contenido
+% ---------------------------------------------------------------------
+% Eyebrow suelto y entradilla
+\newcommand{\ubcdeyebrow}[1]{{\ttfamily\bfseries\ubcdsizelabel\color{ubcdCrimson}\ubcd@spaced{#1}\par}\vspace{3.8pt}}
+\newcommand{\ubcdlead}[1]{{\ubcdragged\ubcdsizelead\color{ubcdStoneOne}#1\par}}
+\newcommand{\ubcdbody}[1]{{\ubcdragged\ubcdsizebody\color{ubcdStoneOne}#1\par}}
+
+% Cifra: \ubcdstat[color]{número}{ETIQUETA}
+\newcommand{\ubcdstat}[3][ubcdInk]{%
+  {\ttfamily\bfseries\ubcdsizestat\color{#1}\ubcd@spaced[-2]{#2}\par}%
+  \vspace{2.8pt}%
+  {\ttfamily\bfseries\ubcdsizelabel\color{ubcdStoneOne}\ubcdragged\ubcd@spaced[8]{#3}\par}}
+
+% Etiqueta y título dentro de tarjeta
+\newcommand{\ubcdtag}[1]{{\ttfamily\bfseries\ubcdsizelabel\color{ubcdCrimson}\ubcd@spaced[12]{#1}\par}\vspace{3.3pt}}
+\newcommand{\ubcdcardtitle}[1]{{\bfseries\ubcdsizelead\color{ubcdInk}\ubcd@spaced[-1]{#1}\par}\vspace{3.3pt}}
+
+% Tarjeta: \begin{ubcdcard}[opciones tcolorbox] ... \end{ubcdcard}
+%   opción ubcdnuevo: borde discontinuo carmesí (elemento nuevo)
+\newtcolorbox{ubcdcard}[1][]{%
+  enhanced, colback=white, colframe=ubcdBorderOne, boxrule=0.25pt, arc=3.3pt,
+  boxsep=0pt, left=7.6pt, right=7.6pt, top=7.6pt, bottom=7.6pt,
+  before skip=0pt, after skip=0pt,
+  fuzzy shadow={0pt}{-0.3pt}{0pt}{0.5pt}{ubcdInk!10},
+  fontupper=\ubcdsizebody\color{ubcdStoneOne}\ubcdragged, #1}
+\tcbset{ubcdnuevo/.style={frame hidden, borderline={0.5pt}{0pt}{ubcdCrimson, dashed}}}
+
+% Banda granate: \ubcdband{CLAVE}{texto}
+\newcommand{\ubcdband}[2]{%
+  \begin{tcolorbox}[enhanced, colback=ubcdMaroon, frame hidden, arc=3.3pt,
+      boxsep=0pt, left=8.5pt, right=8.5pt, top=6.6pt, bottom=6.6pt,
+      before skip=0pt, after skip=0pt,
+      sidebyside, sidebyside align=center, lefthand width=60pt,
+      sidebyside gap=5.7pt, segmentation hidden,
+      fontupper=\ttfamily\bfseries\ubcdsizelabel\color{white!80!ubcdMaroon},
+      fontlower=\ubcdfs{7.1}{9.6}\color{white}\ubcdragged]
+    \ubcd@spaced[12]{#1}\tcblower #2
+  \end{tcolorbox}}
+
+% Píldora de estado: \ubcdpill[ok|warn|bad|neutral]{TEXTO}
+\newcommand{\ubcdpill}[2][neutral]{%
+  \ifstrequal{#1}{ok}{\def\ubcd@pbg{ubcdSuccess}\def\ubcd@pfg{white}\def\ubcd@pfr{ubcdSuccess}}{%
+  \ifstrequal{#1}{warn}{\def\ubcd@pbg{ubcdWarning}\def\ubcd@pfg{ubcdInk}\def\ubcd@pfr{ubcdWarning}}{%
+  \ifstrequal{#1}{bad}{\def\ubcd@pbg{ubcdDanger}\def\ubcd@pfg{white}\def\ubcd@pfr{ubcdDanger}}{%
+  \def\ubcd@pbg{white}\def\ubcd@pfg{ubcdCrimson}\def\ubcd@pfr{ubcdBorderTwo}}}}%
+  \tcbox[on line, colback=\ubcd@pbg, colframe=\ubcd@pfr, boxrule=0.35pt, arc=4.5pt,
+    boxsep=0pt, left=4.3pt, right=4.3pt, top=1.4pt, bottom=1.4pt,
+    fontupper=\ttfamily\bfseries\ubcdfs{5.7}{6.5}\color{\ubcd@pfg}]{#2}}
+
+% Filas numeradas con filete entre ellas
+\newif\ifubcd@firstrow
+\newenvironment{ubcdrows}{\par\global\ubcd@firstrowtrue}{\par}
+\newcommand{\ubcd@rowsep}{%
+  \ifubcd@firstrow\global\ubcd@firstrowfalse
+  \else\par\vspace{\ubcdrowgap}{\color{ubcdBorderOne}\hrule height 0.25pt}\vspace{\ubcdrowgap}\fi}
+\newcommand{\ubcd@rowtext}[2]{\ubcdragged
+  {\bfseries\ubcdsizehead\color{ubcdInk}#1\par}\vspace{1.4pt}%
+  {\ubcdsizebody\color{ubcdStoneOne}#2\par}}
+% \ubcdrow{01}{Título}{Descripción}
+\newcommand{\ubcdrow}[3]{\ubcd@rowsep\noindent
+  \begin{minipage}[t]{15.2pt}{\ttfamily\bfseries\ubcdfs{7.6}{9.7}\color{ubcdVermilion}#1}\end{minipage}%
+  \hspace{7.6pt}%
+  \begin{minipage}[t]{\dimexpr\linewidth-22.8pt\relax}\ubcd@rowtext{#2}{#3}\end{minipage}\par}
+% \ubcdstatusrow{\ubcdpill[ok]{HECHO}}{Título}{Descripción}  (píldora a la izquierda)
+\newcommand{\ubcdstatusrow}[3]{\ubcd@rowsep\noindent
+  \begin{minipage}[t]{71pt}\vspace{0pt}#1\end{minipage}%
+  \hspace{7.6pt}%
+  \begin{minipage}[t]{\dimexpr\linewidth-78.6pt\relax}\vspace{0pt}\ubcd@rowtext{#2}{#3}\end{minipage}\par}
+% \ubcdtoolrow{Título}{Descripción}{\ubcdpill[ok]{PÚBLICO}}  (píldora a la derecha)
+\newcommand{\ubcdtoolrow}[3]{\ubcd@rowsep\noindent
+  \begin{minipage}[t]{\dimexpr\linewidth-78pt\relax}\vspace{0pt}\ubcd@rowtext{#1}{#2}\end{minipage}%
+  \hfill
+  \begin{minipage}[t]{70pt}\vspace{0pt}\raggedleft#3\end{minipage}\par}
+
+% Flujos de pasos: \ubcdflow{n} y luego \ubcdstep{01}{texto}\ubcdarrow\ubcdstep...
+\newlength{\ubcd@stepwd}
+\newlength{\ubcd@arrowwd}\setlength{\ubcd@arrowwd}{14pt}
+\newcounter{ubcdflow}
+\newcommand{\ubcd@stepback}{white}
+\newcommand{\ubcd@stepframe}{ubcdBorderOne}
+\newcommand{\ubcd@arrowcolor}{ubcdVermilion}
+\tcbset{ubcd@stepskin/.style={}}
+\newcommand{\ubcd@flowsetup}[1]{\stepcounter{ubcdflow}\noindent
+  \setlength{\ubcd@stepwd}{\dimexpr(\linewidth-\ubcd@arrowwd*\numexpr#1-1\relax)/#1\relax}}
+% Flujo estándar: pasos blancos con filete gris
+\newcommand{\ubcdflow}[1]{%
+  \def\ubcd@stepback{white}\def\ubcd@stepframe{ubcdBorderOne}%
+  \def\ubcd@arrowcolor{ubcdVermilion}\tcbset{ubcd@stepskin/.style={}}%
+  \ubcd@flowsetup{#1}}
+% Flujo "nuevo": fondo tintado y borde discontinuo carmesí (mismo código que ubcdnuevo),
+% para distinguirlo de un flujo estándar en la misma diapositiva
+\newcommand{\ubcdflownuevo}[1]{%
+  \def\ubcd@stepback{ubcdCrimson!7!white}\def\ubcd@stepframe{ubcdCrimson}%
+  \def\ubcd@arrowcolor{ubcdCrimson}\tcbset{ubcd@stepskin/.style={enhanced, ubcdnuevo}}%
+  \ubcd@flowsetup{#1}}
+\newcommand{\ubcd@step}[5][]{%
+  \begin{tcolorbox}[nobeforeafter, box align=center, width=\ubcd@stepwd,
+      equal height group=ubcdflow\theubcdflow, valign=center,
+      colback=#2, colframe=#3, boxrule=0.25pt, arc=2.4pt, boxsep=0pt,
+      left=5.2pt, right=5.2pt, top=4.7pt, bottom=4.7pt, fontupper=\ubcdragged, #1]
+    {\ttfamily\bfseries\ubcdsizelabel\color{#4}#5}%
+  \end{tcolorbox}}
+\newcommand{\ubcdstep}[2]{\ubcd@step[ubcd@stepskin]{\ubcd@stepback}{\ubcd@stepframe}{ubcdCrimson}{#1\par\vspace{1.4pt}{\rmfamily\sffamily\bfseries\ubcdfs{6.2}{7.6}\color{ubcdInk}#2\par}}}
+\newcommand{\ubcdstephl}[2]{\ubcd@step{ubcdCrimson}{ubcdCrimson}{white!85!ubcdCrimson}{#1\par\vspace{1.4pt}{\sffamily\bfseries\ubcdfs{6.2}{7.6}\color{white}#2\par}}}
+\newcommand{\ubcdarrow}{\makebox[\ubcd@arrowwd]{\color{\ubcd@arrowcolor}\ubcdfs{8.5}{8.5}$\mathbf{\rightarrow}$}}
+
+% Captura con borde: \ubcdshot{ancho}{alto}{fichero}
+\newcommand{\ubcdshot}[3]{%
+  \tcbox[colback=white, colframe=ubcdBorderOne, boxrule=0.25pt, arc=2.4pt,
+    boxsep=0pt, left=0pt, right=0pt, top=0pt, bottom=0pt, nobeforeafter]
+    {\includegraphics[width=#1, height=#2, keepaspectratio]{#3}}}
+\newcommand{\ubcdcaption}[1]{\par\vspace{3.3pt}{\ttfamily\ubcdsizelabel\color{ubcdStoneOne}\ubcdragged#1\par}}
+
+% Tablas: cabecera granate y filas alternas
+\newcommand{\ubcdtablefont}{\ubcdsizebody\color{ubcdInk}}
+\newcommand{\ubcdthead}{\rowcolor{ubcdMaroon}}
+\newcommand{\ubcdth}[1]{\textcolor{white}{\bfseries #1}}
+\newcommand{\ubcdtalt}{\rowcolor{white}}
+
+% Cita: \ubcdquote{EYEBROW}{texto}{atribución}
+\newcommand{\ubcdquote}[3]{%
+  \vfill
+  \hspace*{17pt}\begin{minipage}{355pt}\ubcdragged
+    \ubcdeyebrow{#1}\vspace{5.7pt}%
+    {\sffamily\bfseries\ubcdsizetitle\color{ubcdInk}\ubcd@spaced[-1.5]{#2}\par}%
+    \vspace{11.4pt}%
+    {\ttfamily\ubcdfs{6.2}{8}\color{ubcdStoneOne}\ubcd@spaced[6]{#3}\par}%
+  \end{minipage}
+  \vfill}
+
+\endinput

@@ -1,0 +1,380 @@
+% =====================================================================
+%  ubcdposter — plantilla de póster científico con el estilo del
+%  UBCD Design System (mismos colores, fuentes y componentes que el
+%  tema de diapositivas UBCDSlidesTemplate, escalados a tamaño póster).
+%
+%  Uso:
+%    \documentclass{article}
+%    \usepackage[a0]{ubcdposter}     % a0 (defecto) | a1 | a2 ; landscape
+%  Compila con XeLaTeX o LuaLaTeX (Archivo + JetBrains Mono vía fontspec).
+%
+%  Escala: todas las medidas están pensadas para A0 (en pt) y se
+%  multiplican por \ubcd@scale en A1 (0,707) y A2 (0,5), así que el mismo
+%  .tex se puede imprimir en cualquier tamaño sin retocar.
+% =====================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ubcdposter}[2026/11/26 v1.0 UBCD Poster Template]
+
+\newif\ifubcd@landscape
+\def\ubcd@paper{a0paper}\def\ubcd@scale{1}
+\DeclareOption{a0}{\def\ubcd@paper{a0paper}\def\ubcd@scale{1}}
+\DeclareOption{a1}{\def\ubcd@paper{a1paper}\def\ubcd@scale{0.7071}}
+\DeclareOption{a2}{\def\ubcd@paper{a2paper}\def\ubcd@scale{0.5}}
+\DeclareOption{landscape}{\ubcd@landscapetrue}
+\ProcessOptions\relax
+
+\RequirePackage{iftex}
+\RequirePackage{etoolbox}
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{tikz}
+\usetikzlibrary{arrows.meta}
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins}
+\RequirePackage{array}
+\RequirePackage{colortbl}
+\RequirePackage{tabularx}
+\IfFileExists{qrcode.sty}{\RequirePackage{qrcode}}{}
+
+% ---------------------------------------------------------------------
+%  Escala
+% ---------------------------------------------------------------------
+\newcommand{\ubcd@len}[1]{\fpeval{#1*\ubcd@scale}pt}
+\newcommand{\ubcdfs}[2]{\fontsize{\fpeval{#1*\ubcd@scale}}{\fpeval{#2*\ubcd@scale}}\selectfont}
+
+% ---------------------------------------------------------------------
+%  Página
+% ---------------------------------------------------------------------
+\newlength{\ubcdmargin}\setlength{\ubcdmargin}{\ubcd@len{72}}  % márgenes laterales
+\newlength{\ubcdgap}\setlength{\ubcdgap}{\ubcd@len{40}}        % separación entre bloques
+\newlength{\ubcdpad}\setlength{\ubcdpad}{\ubcd@len{40}}        % relleno de los bloques
+\newlength{\ubcd@tmp}
+\ifubcd@landscape\RequirePackage[landscape]{geometry}\else\RequirePackage{geometry}\fi
+\expandafter\geometry\expandafter{\ubcd@paper}
+\geometry{hmargin=\ubcdmargin, vmargin=0pt, nohead, nofoot}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% ---------------------------------------------------------------------
+%  Colores (tokens del UBCD Design System, idénticos al tema Beamer)
+% ---------------------------------------------------------------------
+\definecolor{ubcdVermilion}{HTML}{E5302E}
+\definecolor{ubcdCrimson}{HTML}{9A1E12}
+\definecolor{ubcdMaroon}{HTML}{7E0E0A}
+\definecolor{ubcdMaroonInk}{HTML}{5C0906}
+\definecolor{ubcdLinen}{HTML}{F4F1EC}
+\definecolor{ubcdPaper}{HTML}{F7F4F0}
+\definecolor{ubcdBorderOne}{HTML}{E0DBD4}
+\definecolor{ubcdBorderTwo}{HTML}{D4CFC8}
+\definecolor{ubcdInk}{HTML}{1A1715}
+\definecolor{ubcdStoneOne}{HTML}{7A6F6A}
+\definecolor{ubcdStoneTwo}{HTML}{9A9490}
+\definecolor{ubcdStoneThree}{HTML}{B0A9A4}
+\definecolor{ubcdSuccess}{HTML}{2E7D5B}
+\definecolor{ubcdWarning}{HTML}{C77A16}
+\definecolor{ubcdDanger}{HTML}{C0281C}
+\pagecolor{ubcdLinen}
+
+% ---------------------------------------------------------------------
+%  Tipografía: Archivo (estructura) + JetBrains Mono (datos, etiquetas)
+% ---------------------------------------------------------------------
+% Fuentes matemáticas escalables (Latin Modern) para tamaños de póster
+\RequirePackage{lmodern}
+\newif\ifubcd@otf
+\ifXeTeX\ubcd@otftrue\fi
+\ifLuaTeX\ubcd@otftrue\fi
+\ifubcd@otf
+  \RequirePackage{fontspec}
+  \setsansfont{Archiv0}[Extension=.otf,
+    UprightFont=*-Regular, BoldFont=*-Bold, ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
+  \setmainfont{Archiv0}[Extension=.otf,
+    UprightFont=*-Regular, BoldFont=*-Bold, ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
+  \setmonofont{JetBrainsMono}[Extension=.otf,
+    UprightFont=*-Regular, BoldFont=*-Bold, ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
+  \newcommand{\ubcd@spaced}[2][18]{{\addfontfeature{LetterSpace=#1}#2}}
+\else
+  \RequirePackage[T1]{fontenc}
+  \RequirePackage[bold]{Archivo}
+  \RequirePackage[scaled=0.9]{inconsolata}
+  \DeclareUnicodeCharacter{2248}{\ensuremath{\approx}}
+  \DeclareUnicodeCharacter{2265}{\ensuremath{\geq}}
+  \DeclareUnicodeCharacter{2264}{\ensuremath{\leq}}
+  \DeclareUnicodeCharacter{2192}{\ensuremath{\rightarrow}}
+  \DeclareUnicodeCharacter{00D7}{\ensuremath{\times}}
+  \newcommand{\ubcd@spaced}[2][18]{#2}
+\fi
+
+% Escala tipográfica (A0, pt)
+\newcommand{\ubcdsizedisplay}{\ubcdfs{104}{112}}   % título del póster
+\newcommand{\ubcdsizesubtitle}{\ubcdfs{46}{56}}    % subtítulo
+\newcommand{\ubcdsizeauthor}{\ubcdfs{34}{44}}      % autores
+\newcommand{\ubcdsizeaffil}{\ubcdfs{24}{32}}       % afiliaciones
+\newcommand{\ubcdsizeblock}{\ubcdfs{46}{52}}       % título de bloque
+\newcommand{\ubcdsizestat}{\ubcdfs{72}{72}}        % cifras
+\newcommand{\ubcdsizehead}{\ubcdfs{32}{40}}        % título de fila
+\newcommand{\ubcdsizelead}{\ubcdfs{34}{48}}        % entradilla
+\newcommand{\ubcdsizebody}{\ubcdfs{28}{40}}        % cuerpo
+\newcommand{\ubcdsizelabel}{\ubcdfs{22}{30}}       % etiquetas mono, pies de figura
+\newcommand{\ubcdsizefooter}{\ubcdfs{24}{34}}      % pie del póster
+\renewcommand{\normalsize}{\ubcdsizebody}
+\renewcommand{\large}{\ubcdfs{34}{46}}
+\renewcommand{\small}{\ubcdfs{24}{34}}
+\renewcommand{\footnotesize}{\ubcdfs{22}{30}}
+
+% Texto en bandera (sin justificar ni partir palabras)
+\newcommand{\ubcdragged}{%
+  \leftskip=0pt\rightskip=0pt plus 1fil\parfillskip=0pt plus 1fil
+  \spaceskip=0pt\xspaceskip=0pt\parindent=0pt\hyphenpenalty=10000\exhyphenpenalty=10000\relax
+  \@rightskip=0pt plus 1fil\relax}% (\@rightskip: las listas también en bandera)
+
+% Minipages y cajas también en bandera por defecto
+\appto\@parboxrestore{\ubcdragged}
+
+% Listas con viñeta bermellón
+\renewcommand{\labelitemi}{\textcolor{ubcdVermilion}{\textbullet}}
+\renewcommand{\labelitemii}{\textcolor{ubcdVermilion}{\scalebox{0.7}{\textbullet}}}
+\setlength{\leftmargini}{\ubcd@len{44}}
+\setlength{\leftmarginii}{\ubcd@len{40}}
+\def\@listi{\leftmargin\leftmargini\topsep\ubcd@len{12}\parsep\z@\itemsep\ubcd@len{10}\partopsep\z@}
+\let\@listI\@listi
+
+\AtBeginDocument{\normalsize\color{ubcdInk}\ubcdragged}
+
+% ---------------------------------------------------------------------
+%  Datos configurables
+% ---------------------------------------------------------------------
+\newcommand{\ubcd@logo}{ubcd-mark-transparent-512.png}
+\newcommand{\ubcd@kicker}{UBCD · IBFG · CSIC–USAL}
+\newcommand{\ubcd@subtitle}{}
+\newcommand{\ubcd@affil}{}
+\newcommand{\ubcd@event}{}
+\newcommand{\ubcd@toplogos}{}
+\newcommand{\ubcdlogo}[1]{\renewcommand{\ubcd@logo}{#1}}
+\newcommand{\ubcdkicker}[1]{\renewcommand{\ubcd@kicker}{#1}}
+\newcommand{\subtitle}[1]{\renewcommand{\ubcd@subtitle}{#1}}
+\newcommand{\ubcdaffiliation}[1]{\renewcommand{\ubcd@affil}{#1}}
+\newcommand{\ubcdevent}[1]{\renewcommand{\ubcd@event}{#1}}
+\newcommand{\ubcdtoplogos}[1]{\renewcommand{\ubcd@toplogos}{#1}}
+
+% ---------------------------------------------------------------------
+%  Cabecera: \ubcdposterheader  (fondo papel, logo de agua, título)
+% ---------------------------------------------------------------------
+\newcommand{\ubcd@lockup}{%
+  \raisebox{-0.5\height}{\includegraphics[height=\ubcd@len{80}]{\ubcd@logo}}%
+  \hspace{\ubcd@len{22}}%
+  \raisebox{-0.5\height}{\ttfamily\bfseries\ubcdsizelabel\color{ubcdCrimson}\ubcd@spaced{\ubcd@kicker}}}
+
+\newcommand{\ubcdposterheader}{%
+  \noindent
+  \begin{tcolorbox}[enhanced, colback=ubcdPaper, frame hidden, sharp corners,
+      grow to left by=\ubcdmargin, grow to right by=\ubcdmargin,
+      boxsep=0pt, left=\ubcdmargin, right=\ubcdmargin,
+      top=\ubcd@len{60}, bottom=\ubcd@len{60},
+      before skip=0pt, after skip=\ubcdgap,
+      borderline south={\ubcd@len{1.5}}{0pt}{ubcdBorderOne},
+      underlay={\begin{scope}
+          \clip (frame.south west) rectangle (frame.north east);
+          \node[opacity=0.10, anchor=center, inner sep=0pt]
+            at ([xshift=-0.2\paperwidth]frame.east)
+            {\includegraphics[width=0.36\paperwidth]{\ubcd@logo}};
+        \end{scope}}]
+    \ubcd@lockup\hfill
+    \ifx\ubcd@event\@empty\else
+      \raisebox{-0.5\height}{\ttfamily\bfseries\ubcdsizelabel\color{ubcdStoneOne}\ubcd@spaced[8]{\ubcd@event}}%
+    \fi\par
+    \vspace{\ubcd@len{44}}%
+    \begin{minipage}[b]{0.70\linewidth}\ubcdragged
+      {\bfseries\ubcdsizedisplay\color{ubcdInk}\ubcd@spaced[-3]{\@title}\par}%
+      \ifx\ubcd@subtitle\@empty\else
+        \vspace{\ubcd@len{22}}%
+        {\bfseries\ubcdsizesubtitle\color{ubcdCrimson}\ubcd@subtitle\par}%
+      \fi
+      \vspace{\ubcd@len{40}}%
+      {\bfseries\ubcdsizeauthor\color{ubcdInk}\@author\par}%
+      \ifx\ubcd@affil\@empty\else
+        \vspace{\ubcd@len{12}}%
+        {\ubcdsizeaffil\color{ubcdStoneOne}\ubcd@affil\par}%
+      \fi
+    \end{minipage}\hfill
+    \begin{minipage}[b]{0.28\linewidth}\raggedleft\ubcd@toplogos\end{minipage}%
+  \end{tcolorbox}}
+
+% ---------------------------------------------------------------------
+%  Columnas y bloques
+%    \begin{ubcdcolumn}{0.31} ... \end{ubcdcolumn}\hfill
+%    \begin{ubcdblock}[opciones]{ETIQUETA}{Título} ... \end{ubcdblock}
+% ---------------------------------------------------------------------
+\newenvironment{ubcdcolumn}[1]
+  {\begin{minipage}[t]{#1\linewidth}\vspace{0pt}\ubcdragged}
+  {\end{minipage}}
+
+\newcommand{\ubcd@blockhead}[2]{%
+  \ifblank{#1}{}{{\ttfamily\bfseries\ubcdsizelabel\color{ubcdCrimson}\ubcd@spaced[12]{#1}\par}%
+    \vspace{\ubcd@len{8}}}%
+  {\bfseries\ubcdsizeblock\color{ubcdInk}\ubcd@spaced[-1.5]{#2}\par}%
+  \vspace{\ubcd@len{20}}{\color{ubcdBorderOne}\hrule height \ubcd@len{1.5}}\vspace{\ubcd@len{24}}}
+
+\newtcolorbox{ubcdblock}[3][]{%
+  enhanced, colback=white, colframe=ubcdBorderOne, boxrule=\ubcd@len{1.2}, arc=\ubcd@len{14},
+  boxsep=0pt, left=\ubcdpad, right=\ubcdpad, top=\ubcdpad, bottom=\ubcdpad,
+  before skip=0pt, after skip=\ubcdgap,
+  fuzzy shadow={0pt}{-\ubcd@len{1.5}}{0pt}{\ubcd@len{2.5}}{ubcdInk!10},
+  fontupper=\ubcdsizebody\color{ubcdInk}\ubcdragged,
+  before upper={\ubcd@blockhead{#2}{#3}}, #1}
+% Variantes:  [ubcdnuevo] borde discontinuo carmesí · [ubcdpaper] fondo papel
+%             [ubcdplain] sin caja (p. ej. referencias)
+\tcbset{
+  ubcdnuevo/.style={frame hidden, borderline={\ubcd@len{2.4}}{0pt}{ubcdCrimson, dashed}},
+  ubcdpaper/.style={colback=ubcdPaper},
+  ubcdplain/.style={frame hidden, interior hidden, no shadow, left=0pt, right=0pt}}
+
+% ---------------------------------------------------------------------
+%  Componentes de contenido (mismos nombres que en las diapositivas)
+% ---------------------------------------------------------------------
+\newcommand{\ubcdeyebrow}[1]{{\ttfamily\bfseries\ubcdsizelabel\color{ubcdCrimson}\ubcd@spaced{#1}\par}\vspace{\ubcd@len{10}}}
+\newcommand{\ubcdtag}[1]{{\ttfamily\bfseries\ubcdsizelabel\color{ubcdCrimson}\ubcd@spaced[12]{#1}\par}\vspace{\ubcd@len{8}}}
+\newcommand{\ubcdlead}[1]{{\ubcdragged\ubcdsizelead\color{ubcdStoneOne}#1\par}}
+\newcommand{\ubcdbody}[1]{{\ubcdragged\ubcdsizebody\color{ubcdStoneOne}#1\par}}
+
+% Cifra: \ubcdstat[color]{número}{ETIQUETA}
+\newcommand{\ubcdstat}[3][ubcdInk]{%
+  {\ttfamily\bfseries\ubcdsizestat\color{#1}\ubcd@spaced[-2]{#2}\par}%
+  \vspace{\ubcd@len{10}}%
+  {\ttfamily\bfseries\ubcdsizelabel\color{ubcdStoneOne}\ubcdragged\ubcd@spaced[8]{#3}\par}}
+
+% Banda granate: \ubcdband{CLAVE}{texto}
+\newcommand{\ubcdband}[2]{%
+  \begin{tcolorbox}[enhanced, colback=ubcdMaroon, frame hidden, arc=\ubcd@len{14},
+      boxsep=0pt, left=\ubcdpad, right=\ubcdpad, top=\ubcd@len{30}, bottom=\ubcd@len{30},
+      before skip=0pt, after skip=\ubcdgap,
+      sidebyside, sidebyside align=center, lefthand width=\ubcd@len{220},
+      sidebyside gap=\ubcd@len{24}, segmentation hidden,
+      fontupper=\ttfamily\bfseries\ubcdsizelabel\color{white!80!ubcdMaroon},
+      fontlower=\bfseries\ubcdsizelead\color{white}\ubcdragged]
+    \ubcd@spaced[12]{#1}\tcblower #2
+  \end{tcolorbox}}
+
+% Píldora de estado: \ubcdpill[ok|warn|bad|neutral]{TEXTO}
+\newcommand{\ubcdpill}[2][neutral]{%
+  \ifstrequal{#1}{ok}{\def\ubcd@pbg{ubcdSuccess}\def\ubcd@pfg{white}\def\ubcd@pfr{ubcdSuccess}}{%
+  \ifstrequal{#1}{warn}{\def\ubcd@pbg{ubcdWarning}\def\ubcd@pfg{ubcdInk}\def\ubcd@pfr{ubcdWarning}}{%
+  \ifstrequal{#1}{bad}{\def\ubcd@pbg{ubcdDanger}\def\ubcd@pfg{white}\def\ubcd@pfr{ubcdDanger}}{%
+  \def\ubcd@pbg{white}\def\ubcd@pfg{ubcdCrimson}\def\ubcd@pfr{ubcdBorderTwo}}}}%
+  \tcbox[on line, colback=\ubcd@pbg, colframe=\ubcd@pfr, boxrule=\ubcd@len{1.2}, arc=\ubcd@len{16},
+    boxsep=0pt, left=\ubcd@len{16}, right=\ubcd@len{16}, top=\ubcd@len{5}, bottom=\ubcd@len{5},
+    fontupper=\ttfamily\bfseries\ubcdfs{20}{24}\color{\ubcd@pfg}]{#2}}
+
+% Filas numeradas con filete entre ellas
+\newif\ifubcd@firstrow
+\newenvironment{ubcdrows}{\par\global\ubcd@firstrowtrue}{\par}
+\newcommand{\ubcd@rowsep}{%
+  \ifubcd@firstrow\global\ubcd@firstrowfalse
+  \else\par\vspace{\ubcd@len{18}}{\color{ubcdBorderOne}\hrule height \ubcd@len{1.2}}\vspace{\ubcd@len{18}}\fi}
+\newcommand{\ubcd@rowtext}[2]{\ubcdragged
+  {\bfseries\ubcdsizehead\color{ubcdInk}#1\par}\vspace{\ubcd@len{6}}%
+  {\ubcdsizebody\color{ubcdStoneOne}#2\par}}
+% \ubcdrow{01}{Título}{Descripción}
+\newcommand{\ubcdrow}[3]{\ubcd@rowsep\noindent
+  \begin{minipage}[t]{\ubcd@len{64}}{\ttfamily\bfseries\ubcdfs{32}{40}\color{ubcdVermilion}#1}\end{minipage}%
+  \hspace{\ubcd@len{24}}%
+  \begin{minipage}[t]{\dimexpr\linewidth-\ubcd@len{88}\relax}\ubcd@rowtext{#2}{#3}\end{minipage}\par}
+% \ubcdtoolrow{Título}{Descripción}{\ubcdpill[ok]{PÚBLICO}}
+\newcommand{\ubcdtoolrow}[3]{\ubcd@rowsep\noindent
+  \begin{minipage}[t]{\dimexpr\linewidth-\ubcd@len{270}\relax}\vspace{0pt}\ubcd@rowtext{#1}{#2}\end{minipage}%
+  \hfill
+  \begin{minipage}[t]{\ubcd@len{250}}\vspace{0pt}\raggedleft#3\end{minipage}\par}
+
+% Flujos de pasos: \ubcdflow{n} y luego \ubcdstep{01}{texto}\ubcdarrow\ubcdstep...
+\newlength{\ubcd@stepwd}
+\newlength{\ubcd@arrowwd}\setlength{\ubcd@arrowwd}{\ubcd@len{56}}
+\newcounter{ubcdflow}
+\newcommand{\ubcdflow}[1]{\stepcounter{ubcdflow}\par\noindent
+  \setlength{\ubcd@stepwd}{\dimexpr(\linewidth-\ubcd@arrowwd*\numexpr#1-1\relax)/#1\relax}}
+\newcommand{\ubcd@step}[4]{%
+  \begin{tcolorbox}[nobeforeafter, box align=center, width=\ubcd@stepwd,
+      equal height group=ubcdflow\theubcdflow, valign=center,
+      colback=#1, colframe=#2, boxrule=\ubcd@len{1.2}, arc=\ubcd@len{10}, boxsep=0pt,
+      left=\ubcd@len{18}, right=\ubcd@len{18}, top=\ubcd@len{16}, bottom=\ubcd@len{16},
+      fontupper=\ubcdragged]
+    {\ttfamily\bfseries\ubcdsizelabel\color{#3}#4}%
+  \end{tcolorbox}}
+\newcommand{\ubcdstep}[2]{\ubcd@step{white}{ubcdBorderOne}{ubcdCrimson}%
+  {#1\par\vspace{\ubcd@len{6}}{\sffamily\bfseries\ubcdfs{26}{32}\color{ubcdInk}#2\par}}}
+\newcommand{\ubcdstephl}[2]{\ubcd@step{ubcdCrimson}{ubcdCrimson}{white!85!ubcdCrimson}%
+  {#1\par\vspace{\ubcd@len{6}}{\sffamily\bfseries\ubcdfs{26}{32}\color{white}#2\par}}}
+\newcommand{\ubcdarrow}{\makebox[\ubcd@arrowwd]{\tikz[baseline=-0.6ex]
+  \draw[-{Stealth[length=\ubcd@len{14}]}, line width=\ubcd@len{3.5}, ubcdVermilion] (0,0) -- (\ubcd@len{36},0);}}
+
+% Captura con borde: \ubcdshot{ancho}{alto}{fichero}
+\newcommand{\ubcdshot}[3]{%
+  \tcbox[colback=white, colframe=ubcdBorderOne, boxrule=\ubcd@len{1.2}, arc=\ubcd@len{10},
+    boxsep=0pt, left=0pt, right=0pt, top=0pt, bottom=0pt, nobeforeafter]
+    {\includegraphics[width=#1, height=#2, keepaspectratio]{#3}}}
+\newcommand{\ubcdcaption}[1]{\par\vspace{\ubcd@len{12}}{\ttfamily\ubcdsizelabel\color{ubcdStoneOne}\ubcdragged#1\par}}
+% Figura a todo el ancho del bloque: \ubcdfigure[alto máx.]{fichero}{pie}
+\newcommand{\ubcdfigure}[3][0.6\linewidth]{%
+  \par\setlength{\ubcd@tmp}{\dimexpr\linewidth-\ubcd@len{2.4}\relax}%
+  {\centering\ubcdshot{\ubcd@tmp}{#1}{#2}\par}\ubcdcaption{#3}}
+
+% Tablas: cabecera granate y filas alternas
+\newcommand{\ubcdtablefont}{\ubcdsizebody\color{ubcdInk}}
+\newcommand{\ubcdthead}{\rowcolor{ubcdMaroon}}
+\newcommand{\ubcdth}[1]{\textcolor{white}{\bfseries #1}}
+\newcommand{\ubcdtalt}{\rowcolor{ubcdLinen}}
+
+% Referencias numeradas: \begin{ubcdrefs}\item ... \end{ubcdrefs}
+\newcounter{ubcd@ref}
+\newenvironment{ubcdrefs}
+  {\par\begin{list}{\ttfamily\bfseries\color{ubcdCrimson}[\arabic{ubcd@ref}]}%
+    {\usecounter{ubcd@ref}\setlength{\leftmargin}{\ubcd@len{64}}\setlength{\labelwidth}{\ubcd@len{56}}%
+     \setlength{\labelsep}{\ubcd@len{8}}\setlength{\itemsep}{\ubcd@len{8}}%
+     \setlength{\parsep}{0pt}\setlength{\topsep}{0pt}%
+     \ubcdfs{20}{28}\color{ubcdStoneOne}}}
+  {\end{list}}
+
+% Código QR (requiere el paquete qrcode): \ubcdqr[alto]{url}
+\newcommand{\ubcdqr}[2][\ubcd@len{170}]{%
+  \ifdefined\qrcode
+    \tcbox[on line, colback=white, frame hidden, arc=\ubcd@len{8}, boxsep=0pt,
+      left=\ubcd@len{12}, right=\ubcd@len{12}, top=\ubcd@len{12}, bottom=\ubcd@len{12}]
+      {\qrcode[height=#1]{#2}}%
+  \else{\ttfamily #2}\fi}
+
+% ---------------------------------------------------------------------
+%  Pie granate con campo binario: \ubcdposterfooter{izquierda}{derecha}
+%  Franja blanca opcional para logos de financiación: \ubcdposterfunders{...}
+% ---------------------------------------------------------------------
+\newcommand{\ubcd@binaryfield}{%
+  \pgfmathsetseed{17}%
+  \foreach \ubcd@i in {1,...,1400}{\pgfmathrandominteger{\ubcd@d}{0}{1}\ubcd@d\ }}
+
+\newcommand{\ubcdposterfooter}[2]{%
+  \par\vfill\noindent
+  \begin{tcolorbox}[enhanced, colback=ubcdMaroon, frame hidden, sharp corners,
+      grow to left by=\ubcdmargin, grow to right by=\ubcdmargin,
+      boxsep=0pt, left=\ubcdmargin, right=\ubcdmargin, top=\ubcd@len{48}, bottom=\ubcd@len{48},
+      before skip=\ubcdgap, after skip=0pt,
+      sidebyside, sidebyside align=center, lefthand ratio=0.72,
+      sidebyside gap=\ubcdgap, segmentation hidden,
+      fontupper=\ubcdsizefooter\color{white!88!ubcdMaroon}\ubcdragged,
+      fontlower=\ubcdsizefooter\color{white}\raggedleft,
+      underlay={\begin{scope}
+          \clip (frame.south west) rectangle (frame.north east);
+          \node[anchor=north west, inner sep=\ubcd@len{20}, text width=\paperwidth,
+                align=left, text=white, text opacity=0.07]
+            at (frame.north west) {\ttfamily\ubcdfs{22}{40}\ubcd@spaced[50]{\ubcd@binaryfield}};
+        \end{scope}}]
+    #1\tcblower #2
+  \end{tcolorbox}}
+
+\newcommand{\ubcdposterfunders}[1]{%
+  \par\nointerlineskip\noindent
+  \begin{tcolorbox}[enhanced, colback=white, frame hidden, sharp corners,
+      grow to left by=\ubcdmargin, grow to right by=\ubcdmargin,
+      boxsep=0pt, left=\ubcdmargin, right=\ubcdmargin, top=\ubcd@len{28}, bottom=\ubcd@len{28},
+      before skip=0pt, after skip=0pt, halign=center]
+    #1
+  \end{tcolorbox}}
+
+\endinput

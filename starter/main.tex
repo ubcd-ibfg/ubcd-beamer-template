@@ -1,0 +1,38 @@
+% !TEX program = xelatex
+% Blank starter deck for UBCDSlidesTemplate.  Build:  latexmk main.tex
+\documentclass[aspectratio=169,t]{beamer}
+\usetheme{UBCDSlidesTemplate}
+\usepackage[spanish,es-noshorthands,es-nolayout]{babel}
+
+% \setbeameroption{show notes on second screen=right}
+\graphicspath{{../logos/}{logos/}{figures/}}
+
+\title{Título}
+\subtitle{Subtítulo}
+\author{Nombre Apellidos}
+\date{Lugar · fecha}
+
+\ubcdkicker{UNIDAD · INSTITUTO · CENTRO}
+\ubcdfootertext{Título corto}
+\ubcdtitlemeta{\ubcdmetarow{AUTOR}{Nombre Apellidos}}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \titlepage
+  \note{Presentación.}
+\end{frame}
+
+\ubcdsection{Primera sección}{Qué se cuenta en esta sección.}
+
+\begin{frame}{Título de diapositiva}{EYEBROW}
+  \begin{ubcdrows}
+    \ubcdrow{01}{Punto uno}{Descripción.}
+    \ubcdrow{02}{Punto dos}{Descripción.}
+  \end{ubcdrows}
+  \note{Nota de orador.}
+\end{frame}
+
+\ubcdclosing{Gracias}{¿Preguntas?}{correo · web}
+
+\end{document}

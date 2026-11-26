@@ -1,0 +1,4 @@
+# Compila siempre con XeLaTeX (fuentes Archivo + JetBrains Mono vía fontspec)
+$pdf_mode = 5;
+# Encuentra ubcdposter.sty y los logos en la raíz del repo
+ensure_path('TEXINPUTS', '../');

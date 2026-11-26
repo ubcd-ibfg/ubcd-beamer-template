@@ -1,0 +1,141 @@
+% !TEX program = xelatex
+% =====================================================================
+%  EJEMPLO — póster ubcdposter (A0 vertical, tres columnas)
+%  Compila con XeLaTeX:  latexmk main.tex      (ver latexmkrc)
+%  Cambia a A1/A2 o apaisado en las opciones del paquete: el diseño
+%  se escala solo.
+% =====================================================================
+\documentclass{article}
+\usepackage[a0]{ubcdposter}   % a0 | a1 | a2 ; añade ",landscape" para apaisado
+\usepackage[spanish,es-noshorthands,es-nolayout]{babel}
+
+\graphicspath{{../logos/}{logos/}{figures/}}
+
+% ---------------- CABECERA --------------------------------------------
+\title{Título del póster en una o dos líneas, claro y directo}
+\subtitle{Subtítulo con el mensaje principal del trabajo}
+\author{Nombre Apellidos\textsuperscript{1}, Otra Persona\textsuperscript{1,2}, Tercera Autora\textsuperscript{2}}
+\ubcdaffiliation{\textsuperscript{1}Unidad, Instituto (Centro), Ciudad\quad
+                 \textsuperscript{2}Otro centro, Ciudad}
+\ubcdkicker{UNIDAD · INSTITUTO · CENTRO}
+\ubcdevent{CONGRESO · CIUDAD · 2027}
+% Logos a la derecha de la cabecera (opcional):
+% \ubcdtoplogos{\includegraphics[height=110pt]{logo-a.pdf}\hspace{40pt}\includegraphics[height=110pt]{logo-b.png}}
+
+\begin{document}
+
+\ubcdposterheader
+
+% ============================ COLUMNA 1 ==============================
+\begin{ubcdcolumn}{0.31}
+  \begin{ubcdblock}{01 · CONTEXTO}{Introducción}
+    \ubcdlead{Una entradilla de dos o tres líneas que resume el problema y por qué importa.}
+    \vspace{24pt}
+    Texto del cuerpo. En un póster conviene escribir poco: frases cortas,
+    una idea por párrafo y figuras que se entiendan sin leer el texto.
+    \begin{itemize}
+      \item Primer punto del contexto.
+      \item Segundo punto, con una \textbf{palabra clave} en negrita.
+      \item Tercer punto.
+    \end{itemize}
+  \end{ubcdblock}
+
+  \begin{ubcdblock}{02 · OBJETIVOS}{Objetivos}
+    \begin{ubcdrows}
+      \ubcdrow{01}{Primer objetivo}{Descripción breve del primer objetivo.}
+      \ubcdrow{02}{Segundo objetivo}{Descripción breve del segundo objetivo.}
+      \ubcdrow{03}{Tercer objetivo}{Descripción breve del tercer objetivo.}
+    \end{ubcdrows}
+  \end{ubcdblock}
+
+  \begin{ubcdblock}{03 · MÉTODOS}{Métodos}
+    \ubcdflow{3}%
+    \ubcdstep{01}{Datos}\ubcdarrow
+    \ubcdstephl{02}{Modelo}\ubcdarrow
+    \ubcdstep{03}{Validación}\par
+    \vspace{28pt}
+    Describe el procedimiento en pocas líneas: datos de partida, método y
+    cómo se ha evaluado frente a la referencia.
+  \end{ubcdblock}
+\end{ubcdcolumn}\hfill
+% ============================ COLUMNA 2 ==============================
+\begin{ubcdcolumn}{0.31}
+  \begin{ubcdblock}{04 · RESULTADOS}{Resultado principal}
+    \ubcdfigure{placeholder.png}{Figura 1. Pie de figura en monoespaciada: qué se ve y cómo leerlo.}
+    \vspace{36pt}
+    \begin{minipage}[t]{0.31\linewidth}\ubcdstat[ubcdCrimson]{0,94}{F1 · MÉTODO NUEVO}\end{minipage}\hfill
+    \begin{minipage}[t]{0.31\linewidth}\ubcdstat{0,71}{F1 · MÉTODO CLÁSICO}\end{minipage}\hfill
+    \begin{minipage}[t]{0.31\linewidth}\ubcdstat{×3}{MÁS RÁPIDO}\end{minipage}
+  \end{ubcdblock}
+
+  \begin{ubcdblock}[ubcdnuevo]{05 · RESULTADOS}{Comparación con la referencia}
+    {\ubcdtablefont\renewcommand{\arraystretch}{1.5}\setlength{\tabcolsep}{14pt}%
+    \begin{tabularx}{\linewidth}{@{\hspace{14pt}}X r r}
+      \ubcdthead \ubcdth{Conjunto de datos} & \ubcdth{Clásico} & \ubcdth{Nuevo}\\
+      \ubcdtalt Conjunto A & 0,71 & \textbf{0,94}\\
+      Conjunto B & 0,68 & \textbf{0,90}\\
+      \ubcdtalt Conjunto C & 0,80 & \textbf{0,85}\\
+    \end{tabularx}}
+    \ubcdcaption{Tabla 1. Bloque con la opción ubcdnuevo (borde discontinuo) para destacar.}
+  \end{ubcdblock}
+
+  \begin{ubcdblock}{06 · RESULTADOS}{Resultados secundarios}
+    \begin{minipage}[t]{0.48\linewidth}
+      \ubcdfigure[0.8\linewidth]{placeholder.png}{Figura 2a. Primer panel.}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\linewidth}
+      \ubcdfigure[0.8\linewidth]{placeholder.png}{Figura 2b. Segundo panel.}
+    \end{minipage}\par
+    \vspace{24pt}
+    Una o dos frases que expliquen qué añaden estas figuras al resultado principal.
+  \end{ubcdblock}
+\end{ubcdcolumn}\hfill
+% ============================ COLUMNA 3 ==============================
+\begin{ubcdcolumn}{0.31}
+  \begin{ubcdblock}[ubcdpaper]{07 · HERRAMIENTAS}{Software desarrollado}
+    \begin{ubcdrows}
+      \ubcdtoolrow{Herramienta A}{Qué hace y para quién.}{\ubcdpill[ok]{PÚBLICO}}
+      \ubcdtoolrow{Herramienta B}{Qué hace y para quién.}{\ubcdpill[warn]{EN DESARROLLO}}
+      \ubcdtoolrow{Herramienta C}{Qué hace y para quién.}{\ubcdpill{BORRADOR}}
+    \end{ubcdrows}
+  \end{ubcdblock}
+
+  \ubcdband{CONCLUSIÓN}{El mensaje que alguien debería llevarse tras mirar el póster diez segundos.}
+
+  \begin{ubcdblock}{08 · CONCLUSIONES}{Conclusiones}
+    \begin{itemize}
+      \item Primera conclusión, apoyada en la Figura 1.
+      \item Segunda conclusión, apoyada en la Tabla 1.
+      \item Siguientes pasos.
+    \end{itemize}
+  \end{ubcdblock}
+
+  \begin{ubcdblock}{09 · DISPONIBILIDAD}{Código y datos}
+    \begin{minipage}[c]{0.62\linewidth}
+      Código y datos en repositorios públicos. Escanea el código QR para ver la documentación.\par
+      \vspace{12pt}{\ttfamily\small github.com/org/repo\par}
+    \end{minipage}\hfill
+    \begin{minipage}[c]{0.32\linewidth}\raggedleft
+      \ubcdqr[150pt]{https://example.org}
+    \end{minipage}
+  \end{ubcdblock}
+
+  \begin{ubcdblock}[ubcdplain]{}{Referencias}
+    \begin{ubcdrefs}
+      \item Autor A, Autor B. Título del artículo. \emph{Revista} 12, 345–356 (2025).
+      \item Autor C \emph{et al.} Título del artículo. \emph{Revista} 7, 89 (2026).
+    \end{ubcdrefs}
+  \end{ubcdblock}
+\end{ubcdcolumn}
+
+% ============================== PIE ==================================
+\ubcdposterfooter{%
+  {\bfseries\color{white}Contacto}\quad nombre.apellidos@centro.es · sitio.web\par
+  \vspace{10pt}%
+  Agradecimientos y financiación: proyecto, convocatoria o entidad financiadora.}%
+ {\ubcdqr{https://example.org}}
+
+% Franja blanca opcional para logos de financiación (según su manual de uso):
+% \ubcdposterfunders{\includegraphics[height=120pt]{institucionales.pdf}}
+
+\end{document}

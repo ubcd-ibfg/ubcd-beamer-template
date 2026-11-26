@@ -1,0 +1,146 @@
+% !TEX program = xelatex
+% =====================================================================
+%  EJEMPLO — UBCDSlidesTemplate
+%  Muestra todos los componentes del tema. Copia este fichero, borra lo
+%  que no uses y sustituye el contenido.
+%  Compila con XeLaTeX:  latexmk main.tex      (ver latexmkrc)
+%  Notas de orador: descomenta \setbeameroption{show notes on second screen=right}
+% =====================================================================
+\documentclass[aspectratio=169,t]{beamer}
+\usetheme{UBCDSlidesTemplate}
+\usepackage[spanish,es-noshorthands,es-nolayout]{babel}
+\usepackage{tabularx}
+
+% \setbeameroption{show notes on second screen=right}
+
+% Rutas de imágenes: logos del tema, logos propios y figuras
+\graphicspath{{../logos/}{logos/}{figures/}}
+
+% ---------------- DATOS DE PORTADA ------------------------------------
+\title{Título de la presentación}
+\subtitle{Subtítulo que explica de qué trata, en una o dos líneas}
+\author{Nombre Apellidos}
+\date{Lugar · 1 ene 2027}
+
+% Fila superior de logos (opcional). Sin ella, la fecha va abajo a la derecha.
+% \ubcdtoplogos{\includegraphics[height=14pt]{logo-a.pdf}\hspace{16pt}\includegraphics[height=14pt]{logo-b.png}}
+
+% Pie de la portada (opcional): financiación, logos institucionales...
+% \titlegraphic{\includegraphics[width=290pt]{institucionales.pdf}}
+
+\ubcdkicker{UNIDAD · INSTITUTO · CENTRO}        % etiqueta junto al logo
+\ubcdfootertext{Título corto · Unidad}           % pie de cada diapositiva
+\ubcdtitlemeta{%                                  % filas de metadatos de la portada
+  \ubcdmetarow{AUTOR}{Nombre Apellidos · Cargo}
+  \ubcdmetarow{PROYECTO}{Código · Nombre del proyecto}
+  \ubcdmetarow{EQUIPO}{Responsable 1 · Responsable 2}
+}
+
+\begin{document}
+
+% ============================ PORTADA ================================
+\begin{frame}[plain]
+  \titlepage
+  \note{Saludo y contexto en una frase. (≈1 min)}
+\end{frame}
+
+% ====================== SECCIÓN 1 · TARJETAS =========================
+\ubcdsection{Sección uno}{Descripción breve que aparece en la portadilla granate de la sección.}
+
+\begin{frame}{Tarjetas en columnas}{EYEBROW EN MAYÚSCULAS}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.325\textwidth}
+    \begin{ubcdcard}[equal height group=demo]
+      \ubcdtag{ETIQUETA · 01}\ubcdcardtitle{Primera tarjeta}
+      Texto de la tarjeta. Usa \texttt{equal height group} para igualar alturas.
+    \end{ubcdcard}
+    \column{0.325\textwidth}
+    \begin{ubcdcard}[equal height group=demo]
+      \ubcdtag{ETIQUETA · 02}\ubcdcardtitle{Segunda tarjeta}
+      Otro texto, más corto.
+    \end{ubcdcard}
+    \column{0.325\textwidth}
+    \begin{ubcdcard}[equal height group=demo, ubcdnuevo]
+      \ubcdtag{ETIQUETA · 03 · NUEVO}\ubcdcardtitle{Tarjeta destacada}
+      Borde discontinuo carmesí con la opción \texttt{ubcdnuevo}.
+    \end{ubcdcard}
+  \end{columns}
+  \vfill
+  \ubcdband{CLAVE}{Banda granate para el mensaje principal de la diapositiva.}
+  \note{Una nota de orador por diapositiva. (≈45 s)}
+\end{frame}
+
+% Fondo "papel" (más claro) para alternar el ritmo visual
+{\ubcdpaper
+\begin{frame}{Filas numeradas}{FONDO PAPEL}
+  \ubcdlead{Entradilla en gris: una frase que introduce la diapositiva.}
+  \vspace{6pt}
+  \begin{ubcdrows}
+    \ubcdrow{01}{Primer punto}{Descripción del primer punto en una o dos líneas.}
+    \ubcdrow{02}{Segundo punto}{Descripción del segundo punto.}
+    \ubcdrow{03}{Tercer punto}{Descripción del tercer punto.}
+  \end{ubcdrows}
+  \note{Tres ideas, una por fila. (≈40 s)}
+\end{frame}
+}
+
+% ====================== SECCIÓN 2 · DATOS ============================
+\ubcdsection{Sección dos}{Cifras, tablas, flujos y capturas.}
+
+\begin{frame}{Cifras y tabla}{DATOS}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.24\textwidth}\ubcdstat[ubcdCrimson]{120}{NÚCLEOS}
+    \column{0.24\textwidth}\ubcdstat{2 TB}{MEMORIA RAM}
+    \column{0.24\textwidth}\ubcdstat{50 TB}{DISCO ÚTIL}
+    \column{0.24\textwidth}\ubcdstat[ubcdCrimson]{GPU}{NUEVA EN 2027}
+  \end{columns}
+  \vspace{10pt}
+  {\ubcdtablefont\renewcommand{\arraystretch}{1.6}\setlength{\tabcolsep}{4.3pt}%
+  \begin{tabularx}{\textwidth}{@{\hspace{4.3pt}}p{0.1\textwidth}X p{0.2\textwidth}p{0.13\textwidth}}
+    \ubcdthead \ubcdth{ID} & \ubcdth{Descripción} & \ubcdth{Área} & \ubcdth{Estado}\\
+    \ubcdtalt A1 & Primera fila (fondo blanco) & Área uno & Hecho\\
+    A2 & Segunda fila (fondo transparente) & Área dos & En curso\\
+    \ubcdtalt A3 & Tercera fila & Área tres & Previsto\\
+  \end{tabularx}}
+  \note{Cifras clave y tabla resumen. (≈50 s)}
+\end{frame}
+
+{\ubcdpaper
+\begin{frame}{Flujos de pasos}{PROCEDIMIENTO}
+  {\ttfamily\bfseries\ubcdsizelabel\color{ubcdStoneOne}FLUJO ESTÁNDAR\par}\vspace{1.4pt}
+  \ubcdflow{4}%
+  \ubcdstep{01}{Entrada}\ubcdarrow
+  \ubcdstep{02}{Registro}\ubcdarrow
+  \ubcdstep{03}{Ejecución}\ubcdarrow
+  \ubcdstep{04}{Entrega}\par
+  \vspace{10pt}
+  {\ttfamily\bfseries\ubcdsizelabel\color{ubcdCrimson}FLUJO NUEVO\par}\vspace{1.4pt}
+  \ubcdflownuevo{3}%
+  \ubcdstep{01}{Identificar}\ubcdarrow
+  \ubcdstephl{02}{Paso destacado}\ubcdarrow
+  \ubcdstep{03}{Desplegar}\par
+  \note{Dos flujos: el estándar y el nuevo (borde discontinuo). (≈30 s)}
+\end{frame}
+}
+
+\begin{frame}{Filas con píldora y captura}{RESULTADOS}
+  \begin{minipage}[t]{262pt}
+    \begin{ubcdrows}
+      \ubcdtoolrow{Herramienta A}{Descripción de lo que hace y por qué importa.}{\ubcdpill[ok]{PÚBLICO}}
+      \ubcdtoolrow{Herramienta B}{Otra descripción, algo más larga para ver cómo ajusta el texto.}{\ubcdpill[warn]{EN DESARROLLO}}
+      \ubcdtoolrow{Herramienta C}{Pendiente de revisión.}{\ubcdpill[bad]{BLOQUEADO}}
+      \ubcdtoolrow{Herramienta D}{Estado neutro.}{\ubcdpill{BORRADOR}}
+    \end{ubcdrows}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{119pt}
+    \vspace{2pt}
+    \ubcdshot{119pt}{110pt}{placeholder.png}
+    \ubcdcaption{Pie de figura en monoespaciada.}
+  \end{minipage}
+  \note{Estados con píldoras de color y una captura a la derecha. (≈40 s)}
+\end{frame}
+
+% ============================ CIERRE =================================
+\ubcdclosing{Gracias}{¿Preguntas?}{correo@ejemplo.org · sitio.web}
+
+\end{document}
